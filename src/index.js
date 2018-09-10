@@ -1,9 +1,7 @@
+import fs from 'fs';
 import path from 'path';
 import preProcessPattern from './preProcessPattern';
 import processPattern from './processPattern';
-
-const fs = Promise.promisifyAll(require('fs'));
-const constants = Promise.promisifyAll(require('constants'));
 
 function CopyWebpackPlugin(patterns = [], options = {}) {
     if (!Array.isArray(patterns)) {
@@ -164,7 +162,7 @@ function CopyWebpackPlugin(patterns = [], options = {}) {
                 if (value.copyPermissions) {
                     debug(`restoring permissions to ${value.webpackTo}`);
 
-                    let constsfrom = fs.constants || constants;
+                    let constsfrom = fs.constants;
 
                     const mask = constsfrom.S_IRWXU | constsfrom.S_IRWXG | constsfrom.S_IRWXD;
                     fs.chmodSync(path.join(output, value.webpackTo), value.perms & mask);

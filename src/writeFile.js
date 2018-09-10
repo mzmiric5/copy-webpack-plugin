@@ -1,14 +1,12 @@
 import loaderUtils from 'loader-utils';
 import path from 'path';
+import fs from 'fs';
 import cacache from 'cacache';
 import serialize from 'serialize-javascript';
 import { name, version } from '../package.json';
 import findCacheDir from 'find-cache-dir';
 import { stat, readFile } from './utils/promisify';
 import crypto from 'crypto';
-
-const fs = Promise.promisifyAll(require('fs'));
-const constants = Promise.promisifyAll(require('constants'));
 
 export default function writeFile(globalRef, pattern, file) {
     const {info, debug, compilation, fileDependencies, written, inputFileSystem, copyUnmodified} = globalRef;
@@ -115,7 +113,7 @@ export default function writeFile(globalRef, pattern, file) {
               written[file.absoluteFrom].copyPermissions = pattern.copyPermissions;
               written[file.absoluteFrom].webpackTo = file.webpackTo;
 
-              let constsfrom = fs.constants || constants;
+              let constsfrom = fs.constants;
 
               perms |= stat.mode & constsfrom.S_IRWXU;
               perms |= stat.mode & constsfrom.S_IRWXG;
