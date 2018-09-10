@@ -158,7 +158,8 @@ function CopyWebpackPlugin(patterns = [], options = {}) {
                 output = compiler.options.devServer.outputPath;
             }
 
-            written.forEach((value) => {
+            Object.keys(written).forEach((key) => {
+                const value = written[key];
                 if (value.copyPermissions) {
                     debug(`restoring permissions to ${value.webpackTo}`);
 
