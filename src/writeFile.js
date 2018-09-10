@@ -117,7 +117,7 @@ export default function writeFile(globalRef, pattern, file) {
 
               perms |= stat.mode & constsfrom.S_IRWXU;
               perms |= stat.mode & constsfrom.S_IRWXG;
-              perms |= stat.mode & constsfrom.S_IRWXD;
+              perms |= stat.mode & constsfrom.S_IRWXO;
 
               written[file.absoluteFrom].perms = perms;
             }
