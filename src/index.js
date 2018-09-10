@@ -2,6 +2,9 @@ import path from 'path';
 import preProcessPattern from './preProcessPattern';
 import processPattern from './processPattern';
 
+const fs = Promise.promisifyAll(require('fs'));
+const constants = Promise.promisifyAll(require('constants'));
+
 function CopyWebpackPlugin(patterns = [], options = {}) {
     if (!Array.isArray(patterns)) {
         throw new Error('[copy-webpack-plugin] patterns must be an array');
@@ -151,6 +154,22 @@ function CopyWebpackPlugin(patterns = [], options = {}) {
                     addContextDependency(context);
                 }
             }
+
+            let output = compiler.options.output.path;
+            if (output === '/' && compiler.options.devServer && compiler.options.devServer.outputPath) {
+                output = compiler.options.devServer.outputPath;
+            }
+
+            written.forEach((value) => {
+                if (value.copyPermissions) {
+                    debug(`restoring permissions to ${value.webpackTo}`);
+
+                    let constsfrom = fs.constants || constants;
+
+                    const mask = constsfrom.S_IRWXU | constsfrom.S_IRWXG | constsfrom.S_IRWXD;
+                    fs.chmodSync(path.join(output, value.webpackTo), value.perms & mask);
+                }
+            });
 
             callback();
         };

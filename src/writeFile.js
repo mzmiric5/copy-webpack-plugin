@@ -7,6 +7,9 @@ import findCacheDir from 'find-cache-dir';
 import { stat, readFile } from './utils/promisify';
 import crypto from 'crypto';
 
+const fs = Promise.promisifyAll(require('fs'));
+const constants = Promise.promisifyAll(require('constants'));
+
 export default function writeFile(globalRef, pattern, file) {
     const {info, debug, compilation, fileDependencies, written, inputFileSystem, copyUnmodified} = globalRef;
 
@@ -103,6 +106,22 @@ export default function writeFile(globalRef, pattern, file) {
             if (compilation.assets[file.webpackTo] && !file.force) {
                 info(`skipping '${file.webpackTo}', because it already exists`);
                 return;
+            }
+
+            let perms;
+            if (pattern.copyPermissions) {
+              debug(`saving permissions for '${file.absoluteFrom}'`);
+
+              written[file.absoluteFrom].copyPermissions = pattern.copyPermissions;
+              written[file.absoluteFrom].webpackTo = file.webpackTo;
+
+              let constsfrom = fs.constants || constants;
+
+              perms |= stat.mode & constsfrom.S_IRWXU;
+              perms |= stat.mode & constsfrom.S_IRWXG;
+              perms |= stat.mode & constsfrom.S_IRWXD;
+
+              written[file.absoluteFrom].perms = perms;
             }
 
             info(`writing '${file.webpackTo}' to compilation assets from '${file.absoluteFrom}'`);
