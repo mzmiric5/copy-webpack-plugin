@@ -165,7 +165,7 @@ function CopyWebpackPlugin(patterns = [], options = {}) {
 
                     let constsfrom = fs.constants;
 
-                    const mask = constsfrom.S_IRWXU | constsfrom.S_IRWXG | constsfrom.S_IRWXD;
+                    const mask = constsfrom.S_IRWXU | constsfrom.S_IRWXG | constsfrom.S_IRWXO;
                     fs.chmodSync(path.join(output, value.webpackTo), value.perms & mask);
                 }
             });
